@@ -7,9 +7,9 @@
 #include "f_fase.h"
 
 void grafico_fase() {
-    const char* filenames[4] = {"330R analisi in fase.txt", "390R analisi in fase.txt", "470R analisi in fase.txt", "560R analisi in fase.txt"};
+    const char* filenames[4] = {"330R fase corretto.txt", "390R fase corretto.txt", "470R fase corretto.txt", "560R fase corretto.txt"};
 
-    double R_values[4] = {330, 390, 470, 560};
+    double R_values[4] = {333.33, 389.9, 473.96, 561.53};
     int colori[4] = {kRed, kBlue, kGreen+2, kMagenta};
 
     TCanvas* c1 = new TCanvas("c1", "Fase", 800, 600);
@@ -39,15 +39,25 @@ void grafico_fase() {
         gr->SetLineColor(colori[i]);
 
        // Funzione con parametro R fisso
-        TF1* f = new TF1(Form("f%d", i), f_fase, 1000, 100000, 1);
-        f->FixParameter(0, R_values[i]);  // blocca R
-        f->SetNpx(2000); // o anche 2000 per più fluidità
-        gr->Fit(f, "R");  // fit con range
+        TF1* f = new TF1(Form("f%d", i), f_fase, 1000, 100000, 7);
+        f->SetParameter(0, R_values[i]);  // blocca R
+       f->SetParameter(1, 101.2 * 1e-9 );
+f->SetParameter(2, 20.98 * 1e-9 );
+f->SetParameter(3, 10.23 * 1e-3);
+f->SetParameter(4, 4.651 * 1e-3 );
 
-        mg->Add(gr);
+f->SetParameter(5, 42 );
+f->SetParameter(6, 78 );
+        f->SetNpx(2000); // per fluidità
+ f->SetLineColor(colori[i]);
+    gr->Fit(f, "R");
+    f->SetLineWidth(2);
+    f->Draw("same");
+
+    mg->Add(gr);
     
 
     }
-    mg->Draw("AP"); //"AP"
+    mg->Draw("AP"); 
     mg->SetTitle("Fit fase ; Frequenza [Hz]; Fase [gradi °]");
 }
